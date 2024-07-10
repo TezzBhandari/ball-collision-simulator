@@ -1,38 +1,41 @@
-import { getRandomInt } from "./utilities";
+import { getRandomInt, massOfSphere, volumeOfSphere } from "./utilities";
+import constants from "./constants";
 
 const colorArray = ["#00b6d3", "red", "green", "magenta"];
 class Ball {
-  private speed: number = 4;
+  private speed: number = 0;
   private velocityX: number = 0;
   private velocityY: number = 0;
   private X: number = 0;
   private Y: number = 0;
   private density: number = 0;
-  private color: string = "#00b6d3";
+  private color: string = "";
   private radius: number = 0;
-  private centerX: number = this.X + this.radius;
-  private centerY: number = this.Y + this.radius;
-  private upperBoundary: number = 0;
-  private lowerBoundary: number = 600 - this.radius * 2;
-  private leftBoundary: number = 0;
-  private rightBoundary: number = 600 - this.radius * 2;
-
+  private centerX: number = 0;
+  private centerY: number = 0;
+  private upperBoundary: number = constants.UPPER_BOUNDARY;
+  private lowerBoundary: number = constants.LOWER_BOUNDARY - this.radius * 2;
+  private leftBoundary: number = constants.LOWER_BOUNDARY;
+  private rightBoundary: number = constants.RIGHT_BOUNDARY - this.radius * 2;
   private ball: HTMLDivElement = document.createElement("div");
 
   constructor(x: number, y: number, density: number, radius: number) {
     this.density = density;
     this.radius = radius;
-    this.upperBoundary = 0;
-    this.lowerBoundary = 600 - this.radius * 2;
-    this.leftBoundary = 0;
-    this.rightBoundary = 600 - this.radius * 2;
 
+    this.upperBoundary = constants.UPPER_BOUNDARY;
+    this.lowerBoundary = constants.LOWER_BOUNDARY - this.radius * 2;
+    this.leftBoundary = constants.LEFT_BOUNDARY;
+    this.rightBoundary = constants.RIGHT_BOUNDARY - this.radius * 2;
+
+    this.speed = getRandomInt(constants.MIN_SPEED, constants.MAX_SPEED);
     const angle = Math.floor(Math.random() * (360 - 0 + 1)) + 0;
+    const Vx = this.speed * Math.cos(angle);
+    const Vy = this.speed * Math.sin(angle);
+    this.updateVelocity(Vx, Vy);
 
-    this.velocityX = this.speed * Math.cos(angle);
-    this.velocityY = this.speed * Math.sin(angle);
+    this.assignColor();
 
-    this.color = colorArray[getRandomInt(0, colorArray.length - 1)];
     this.X =
       Math.floor(Math.random() * (this.rightBoundary - this.leftBoundary + 1)) +
       this.leftBoundary;
@@ -90,6 +93,8 @@ class Ball {
     if (simulationContainer === null) {
       throw new Error("simulation container missing");
     }
+    simulationContainer.style.width = `${constants.RIGHT_BOUNDARY}px`;
+    simulationContainer.style.height = `${constants.LOWER_BOUNDARY}px`;
     this.ball.style.width = `${this.radius * 2}px`;
     this.ball.style.height = `${this.radius * 2}px`;
     this.ball.style.borderRadius = "50%";
@@ -116,7 +121,7 @@ class Ball {
   }
 
   public getVolume() {
-    return (4 / 3) * Math.PI * Math.pow(this.radius, 3);
+    return volumeOfSphere(this.radius);
   }
 
   public getMass() {
@@ -138,6 +143,30 @@ class Ball {
 
   public getVelocityY() {
     return this.velocityY;
+  }
+
+  private assignColor() {
+    const m = this.getMass();
+    const maxMass = massOfSphere(constants.MAX_RAIDUS, constants.MAX_DENSITY);
+    const minMass = massOfSphere(constants.MIN_RADIUS, constants.MAX_RAIDUS);
+    const netMass = maxMass - minMass;
+
+    if (m < (25 / 100) * netMass) {
+      this.color = constants.COLORS[1];
+      return;
+    }
+
+    if (m < (50 / 100) * netMass) {
+      this.color = constants.COLORS[0];
+      return;
+    }
+
+    if (m < (75 / 100) * netMass) {
+      this.color = constants.COLORS[2];
+      return;
+    }
+
+    this.color = constants.COLORS[3];
   }
 }
 

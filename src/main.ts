@@ -3,18 +3,6 @@ import "./style.css";
 import { checkForCollision, getRandomInt, handleCollision } from "./utilities";
 let ballArray: Array<Ball> = [];
 
-const resetSimulation = () => {
-  for (let i = 0; i < ballArray.length; i++) {
-    ballArray[i].remove();
-  }
-};
-
-function initializeSimulation() {
-  for (let i = 0; i < 6; i++) {
-    ballArray.push(createBall());
-  }
-}
-
 function createBall() {
   const density = getRandomInt(50, 800);
   const x = getRandomInt(0, 600);
@@ -23,12 +11,21 @@ function createBall() {
   return new Ball(x, y, density, radius);
 }
 
-function simulate() {
+const resetSimulation = () => {
   for (let i = 0; i < ballArray.length; i++) {
-    ballArray[i].render();
-    ballArray[i].moveBall();
+    ballArray[i].remove();
   }
+};
 
+function initializeSimulation() {
+  for (let i = 0; i < 10; i++) {
+    const ball = createBall();
+    ball.render();
+    ballArray.push(ball);
+  }
+}
+
+function checkAndHandleCollision() {
   for (let i = 0; i < ballArray.length; i++) {
     for (let j = i + 1; j < ballArray.length; j++) {
       const hasCollided = checkForCollision(ballArray[i], ballArray[j]);
@@ -37,6 +34,14 @@ function simulate() {
       }
     }
   }
+}
+
+function simulate() {
+  checkAndHandleCollision();
+  for (let i = 0; i < ballArray.length; i++) {
+    ballArray[i].moveBall();
+  }
+  checkAndHandleCollision();
   requestAnimationFrame(simulate);
 }
 
@@ -49,10 +54,15 @@ spawn.addEventListener("click", (e) => {
   resetSimulation();
   const inputValue = document.getElementById("ball-input") as HTMLInputElement;
   const numberOfBall = parseInt(inputValue.value);
+  if (numberOfBall < 5 || numberOfBall > 100) {
+    return;
+  }
   ballArray = [];
 
   for (let i = 0; i < numberOfBall; i++) {
-    ballArray.push(createBall());
+    const ball = createBall();
+    ball.render();
+    ballArray.push(ball);
   }
 });
 

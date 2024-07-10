@@ -49,9 +49,20 @@ const handleCollision = (ball1: Ball, ball2: Ball) => {
   // ball2.updateBallPosition();
 };
 
+const volumeOfSphere = (radius: number) => {
+  return (4 / 3) * Math.PI * Math.pow(radius, 3);
+};
+
+const massOfSphere = (radius: number, density: number) => {
+  const v = volumeOfSphere(radius);
+  return v * density;
+};
+
 export {
   checkForCollision,
   distanceBetweenTwoBall,
   getRandomInt,
   handleCollision,
+  volumeOfSphere,
+  massOfSphere,
 };
