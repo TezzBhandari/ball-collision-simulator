@@ -1,6 +1,6 @@
 import { Ball } from "./ball";
 import "./style.css";
-import { checkForCollision } from "./utilities";
+import { checkForCollision, getRandomInt, handleCollision } from "./utilities";
 let ballArray: Array<Ball> = [];
 
 const resetSimulation = () => {
@@ -10,7 +10,17 @@ const resetSimulation = () => {
 };
 
 function initializeSimulation() {
-  for (let i = 0; i < 6; i++) [ballArray.push(new Ball())];
+  for (let i = 0; i < 6; i++) {
+    ballArray.push(createBall());
+  }
+}
+
+function createBall() {
+  const density = getRandomInt(50, 800);
+  const x = getRandomInt(0, 600);
+  const y = getRandomInt(0, 600);
+  const radius = getRandomInt(6, 12);
+  return new Ball(x, y, density, radius);
 }
 
 function simulate() {
@@ -23,8 +33,7 @@ function simulate() {
     for (let j = i + 1; j < ballArray.length; j++) {
       const hasCollided = checkForCollision(ballArray[i], ballArray[j]);
       if (hasCollided) {
-        ballArray[i].stopBall();
-        ballArray[j].stopBall();
+        handleCollision(ballArray[i], ballArray[j]);
       }
     }
   }
@@ -43,7 +52,7 @@ spawn.addEventListener("click", (e) => {
   ballArray = [];
 
   for (let i = 0; i < numberOfBall; i++) {
-    ballArray.push(new Ball());
+    ballArray.push(createBall());
   }
 });
 

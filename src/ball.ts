@@ -1,11 +1,15 @@
+import { getRandomInt } from "./utilities";
+
+const colorArray = ["#00b6d3", "red", "green", "magenta"];
 class Ball {
   private speed: number = 4;
   private velocityX: number = 0;
   private velocityY: number = 0;
   private X: number = 0;
   private Y: number = 0;
+  private density: number = 0;
   private color: string = "#00b6d3";
-  private radius: number = 8;
+  private radius: number = 0;
   private centerX: number = this.X + this.radius;
   private centerY: number = this.Y + this.radius;
   private upperBoundary: number = 0;
@@ -15,10 +19,20 @@ class Ball {
 
   private ball: HTMLDivElement = document.createElement("div");
 
-  constructor() {
+  constructor(x: number, y: number, density: number, radius: number) {
+    this.density = density;
+    this.radius = radius;
+    this.upperBoundary = 0;
+    this.lowerBoundary = 600 - this.radius * 2;
+    this.leftBoundary = 0;
+    this.rightBoundary = 600 - this.radius * 2;
+
     const angle = Math.floor(Math.random() * (360 - 0 + 1)) + 0;
+
     this.velocityX = this.speed * Math.cos(angle);
     this.velocityY = this.speed * Math.sin(angle);
+
+    this.color = colorArray[getRandomInt(0, colorArray.length - 1)];
     this.X =
       Math.floor(Math.random() * (this.rightBoundary - this.leftBoundary + 1)) +
       this.leftBoundary;
@@ -99,6 +113,31 @@ class Ball {
   public stopBall() {
     this.velocityX = 0;
     this.velocityY = 0;
+  }
+
+  public getVolume() {
+    return (4 / 3) * Math.PI * Math.pow(this.radius, 3);
+  }
+
+  public getMass() {
+    return this.getVolume() * this.density;
+  }
+
+  public getDensity() {
+    return this.density;
+  }
+
+  public updateVelocity(Vx: number, Vy: number) {
+    this.velocityX = Vx;
+    this.velocityY = Vy;
+  }
+
+  public getVelocityX() {
+    return this.velocityX;
+  }
+
+  public getVelocityY() {
+    return this.velocityY;
   }
 }
 
