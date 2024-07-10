@@ -1,5 +1,6 @@
 import { Ball } from "./ball";
 import "./style.css";
+import { checkForCollision } from "./utilities";
 let ballArray: Array<Ball> = [];
 
 const resetSimulation = () => {
@@ -9,7 +10,7 @@ const resetSimulation = () => {
 };
 
 function initializeSimulation() {
-  for (let i = 0; i < 4; i++) [ballArray.push(new Ball())];
+  for (let i = 0; i < 6; i++) [ballArray.push(new Ball())];
 }
 
 function simulate() {
@@ -17,22 +18,34 @@ function simulate() {
     ballArray[i].render();
     ballArray[i].moveBall();
   }
+
+  for (let i = 0; i < ballArray.length; i++) {
+    for (let j = i + 1; j < ballArray.length; j++) {
+      const hasCollided = checkForCollision(ballArray[i], ballArray[j]);
+      if (hasCollided) {
+        ballArray[i].stopBall();
+        ballArray[j].stopBall();
+      }
+    }
+  }
+  requestAnimationFrame(simulate);
 }
 
-initializeSimulation();
-let intervalId = setInterval(simulate, 40);
-
 const spawn = document.getElementById("spawn");
-spawn?.addEventListener("click", (e) => {
+if (spawn === null) {
+  throw new Error("spawn button doesnot exists");
+}
+spawn.addEventListener("click", (e) => {
   e.preventDefault();
   resetSimulation();
   const inputValue = document.getElementById("ball-input") as HTMLInputElement;
   const numberOfBall = parseInt(inputValue.value);
   ballArray = [];
-  clearInterval(intervalId);
 
   for (let i = 0; i < numberOfBall; i++) {
     ballArray.push(new Ball());
   }
-  intervalId = setInterval(simulate, 40);
 });
+
+initializeSimulation();
+simulate();

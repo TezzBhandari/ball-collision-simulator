@@ -1,15 +1,17 @@
 class Ball {
-  private speed: number = 5;
+  private speed: number = 4;
   private velocityX: number = 0;
   private velocityY: number = 0;
   private X: number = 0;
   private Y: number = 0;
   private color: string = "#00b6d3";
-  private size: number = 18;
+  private radius: number = 8;
+  private centerX: number = this.X + this.radius;
+  private centerY: number = this.Y + this.radius;
   private upperBoundary: number = 0;
-  private lowerBoundary: number = 600 - this.size;
+  private lowerBoundary: number = 600 - this.radius * 2;
   private leftBoundary: number = 0;
-  private rightBoundary: number = 600 - this.size;
+  private rightBoundary: number = 600 - this.radius * 2;
 
   private ball: HTMLDivElement = document.createElement("div");
 
@@ -24,6 +26,25 @@ class Ball {
       Math.floor(
         Math.random() * (this.lowerBoundary - this.upperBoundary + 1)
       ) + this.upperBoundary;
+
+    this.updateCenter();
+  }
+
+  public updateCenter() {
+    this.centerX = this.X + this.radius;
+    this.centerY = this.Y + this.radius;
+  }
+
+  public getCenterX() {
+    return this.centerX;
+  }
+
+  public getCenterY() {
+    return this.centerY;
+  }
+
+  public getRadius() {
+    return this.radius;
   }
 
   public moveBall() {
@@ -43,6 +64,9 @@ class Ball {
       this.velocityY = -1 * this.velocityY;
       this.Y = this.upperBoundary;
     }
+
+    this.updateCenter();
+
     this.ball.style.left = `${this.X}px`;
     this.ball.style.top = `${this.Y}px`;
   }
@@ -52,8 +76,8 @@ class Ball {
     if (simulationContainer === null) {
       throw new Error("simulation container missing");
     }
-    this.ball.style.width = `${this.size}px`;
-    this.ball.style.height = `${this.size}px`;
+    this.ball.style.width = `${this.radius * 2}px`;
+    this.ball.style.height = `${this.radius * 2}px`;
     this.ball.style.borderRadius = "50%";
     this.ball.style.position = "absolute";
     this.ball.style.top = `${this.X}px`;
@@ -70,6 +94,11 @@ class Ball {
   public remove() {
     const simulationContainer = document.getElementById("simulation-container");
     simulationContainer?.removeChild(this.ball);
+  }
+
+  public stopBall() {
+    this.velocityX = 0;
+    this.velocityY = 0;
   }
 }
 
