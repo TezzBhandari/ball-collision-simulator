@@ -15,10 +15,11 @@ const resetSimulation = () => {
   for (let i = 0; i < ballArray.length; i++) {
     ballArray[i].remove();
   }
+  ballArray = [];
 };
 
-function initializeSimulation() {
-  for (let i = 0; i < 10; i++) {
+function initializeSimulation(n: number) {
+  for (let i = 0; i < n; i++) {
     const ball = createBall();
     ball.render();
     ballArray.push(ball);
@@ -37,7 +38,6 @@ function checkAndHandleCollision() {
 }
 
 function simulate() {
-  checkAndHandleCollision();
   for (let i = 0; i < ballArray.length; i++) {
     ballArray[i].moveBall();
   }
@@ -51,20 +51,16 @@ if (spawn === null) {
 }
 spawn.addEventListener("click", (e) => {
   e.preventDefault();
-  resetSimulation();
   const inputValue = document.getElementById("ball-input") as HTMLInputElement;
   const numberOfBall = parseInt(inputValue.value);
+
   if (numberOfBall < 5 || numberOfBall > 100) {
     return;
   }
-  ballArray = [];
 
-  for (let i = 0; i < numberOfBall; i++) {
-    const ball = createBall();
-    ball.render();
-    ballArray.push(ball);
-  }
+  resetSimulation();
+  initializeSimulation(numberOfBall);
 });
 
-initializeSimulation();
+initializeSimulation(10);
 simulate();
